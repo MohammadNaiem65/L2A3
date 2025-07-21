@@ -1,6 +1,9 @@
 import express, { Application, NextFunction, Request, Response } from "express";
+import { bookRouter } from "./app/controllers/book.controller";
 
 const app: Application = express();
+
+app.use(express.json());
 
 app.get("/", (req: Request, res: Response) => {
   res.json({
@@ -8,6 +11,9 @@ app.get("/", (req: Request, res: Response) => {
     message: "Welcome to the Assignment 3, Library Management System API!",
   });
 });
+
+// API handling middlewares
+app.use("/api/books", bookRouter);
 
 // Error Middleware
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
