@@ -6,6 +6,7 @@ const bookRouter = express.Router();
 
 const requiredFields = ["title", "author", "genre", "isbn", "copies"];
 
+// Get all books
 bookRouter.get("/", async (req: Request, res: Response) => {
   const { filter, sort, sortby, limit = 10 } = req.query;
 
@@ -34,7 +35,7 @@ bookRouter.get("/", async (req: Request, res: Response) => {
 
     return res.status(200).json({
       success: true,
-      message: "Books fetched successfully",
+      message: "Books retrieved successfully",
       data: books,
     });
   } catch (error) {
@@ -50,6 +51,98 @@ bookRouter.get("/", async (req: Request, res: Response) => {
   }
 });
 
+// Get a book by _id
+bookRouter.get("/:bookId", async (req: Request, res: Response) => {
+  const { bookId } = req.params;
+
+  try {
+    const book = await Book.findById(bookId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Book retrieved successfully",
+      data: book,
+    });
+  } catch (error) {
+    console.error("Error fetching book:", error);
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false,
+      error: {
+        name: "ServerError",
+        message: "An error occurred while fetching book",
+      },
+    });
+  }
+});
+
+// Update a book by _id
+bookRouter.put("/:bookId", async (req: Request, res: Response) => {
+  const { bookId } = req.params;
+
+  try {
+    const updatedBook = await Book.findByIdAndUpdate(bookId, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Book updated successfully",
+      data: updatedBook,
+    });
+  } catch (error: any) {
+    console.error("Error updating book:", JSON.stringify(error, null, 2));
+
+    // Handle validation errors
+    if (error?._message === "Validation failed") {
+      return res.status(400).json({
+        message: error?.message,
+        success: false,
+        error: {
+          name: error.name,
+          errors: error.errors,
+        },
+      });
+    }
+
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false,
+      error: {
+        name: "ServerError",
+        message: "An error occurred while updating book",
+      },
+    });
+  }
+});
+
+// Delete a book by _id
+bookRouter.delete("/:bookId", async (req: Request, res: Response) => {
+  const { bookId } = req.params;
+
+  try {
+    await Book.deleteOne({ _id: bookId });
+
+    return res.status(200).json({
+      success: true,
+      message: "Book deleted successfully",
+      data: null,
+    });
+  } catch (error) {
+    console.error("Error deleting book:", JSON.stringify(error, null, 2));
+    return res.status(500).json({
+      message: "Internal server error",
+      success: false,
+      error: {
+        name: "ServerError",
+        message: "An error occurred while deleting book",
+      },
+    });
+  }
+});
+
+// Create a new book
 bookRouter.post("/", async (req: Request, res: Response) => {
   // Check for required fields
   requiredFields.forEach((field) => {
