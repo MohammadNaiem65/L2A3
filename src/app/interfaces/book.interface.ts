@@ -1,3 +1,5 @@
+import { Model, Types } from "mongoose";
+
 enum Genre {
   FICTION = "FICTION",
   NON_FICTION = "NON_FICTION",
@@ -17,5 +19,13 @@ interface Book {
   available: boolean;
 }
 
+interface BookModelType extends Model<Book, {}, BookMethods> {
+  isAvailable(_id: Types.ObjectId, quantity?: number): Promise<boolean>;
+}
+
+interface BookMethods {
+  markAsUnavailable(): Promise<void>;
+}
+
 export default Book;
-export { Genre };
+export { BookMethods, BookModelType, Genre };

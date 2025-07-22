@@ -1,21 +1,24 @@
 import { model, Schema } from "mongoose";
 import Borrow from "../interfaces/borrow.interface";
 
-const borrowSchema = new Schema<Borrow>({
-  book: {
-    type: Schema.Types.ObjectId,
-    ref: "Book",
-    required: true,
+const borrowSchema = new Schema<Borrow>(
+  {
+    book: {
+      type: Schema.Types.ObjectId,
+      ref: "Book",
+      required: true,
+    },
+    quantity: {
+      type: Number,
+      required: true,
+    },
+    dueDate: {
+      type: Date,
+      required: true,
+    },
   },
-  quantity: {
-    type: Number,
-    required: true,
-  },
-  dueDate: {
-    type: Date,
-    required: true,
-  },
-});
+  { timestamps: true, versionKey: false }
+);
 
 const Borrow = model<Borrow>("Borrow", borrowSchema);
 

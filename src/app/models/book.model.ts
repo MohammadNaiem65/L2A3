@@ -1,7 +1,11 @@
 import { model, Schema } from "mongoose";
-import Book, { Genre } from "../interfaces/book.interface";
+import Book, {
+  BookMethods,
+  BookModelType,
+  Genre,
+} from "../interfaces/book.interface";
 
-const bookSchema = new Schema<Book>(
+const bookSchema = new Schema<Book, BookModelType, BookMethods>(
   {
     title: {
       type: String,
@@ -44,6 +48,26 @@ const bookSchema = new Schema<Book>(
   }
 );
 
-const Book = model<Book>("Book", bookSchema);
+bookSchema.static(
+  "isAvailable",
+  async function (
+    _id: Schema.Types.ObjectId,
+    quantity: number = 1
+  ): Promise<boolean> {
+    const book = await this.findById(_id);
+
+    return book?.available && book?.copies >= quantity ? true : false;
+  }
+);
+
+bookSchema.method(
+  "markAsUnavailable",
+  async function markAsUnavailable(): Promise<void> {
+    this.available = false;
+    await this.save();
+  }
+);
+
+const Book = model<Book, BookModelType>("Book", bookSchema);
 
 export default Book;
