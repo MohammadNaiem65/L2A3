@@ -194,4 +194,4 @@ bookRouter.post("/", async (req: Request, res: Response) => {
   }
 });
 
-export { bookRouter };
+export default bookRouter;

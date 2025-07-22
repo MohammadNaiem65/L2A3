@@ -1,5 +1,6 @@
 import express, { Application, NextFunction, Request, Response } from "express";
-import { bookRouter } from "./app/controllers/book.controller";
+import bookRouter from "./app/controllers/book.controller";
+import borrowRouter from "./app/controllers/borrow.controller";
 
 const app: Application = express();
 
@@ -14,6 +15,7 @@ app.get("/", (req: Request, res: Response) => {
 
 // API handling middlewares
 app.use("/api/books", bookRouter);
+app.use("/api/borrow", borrowRouter);
 
 // Error Middleware
 app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
