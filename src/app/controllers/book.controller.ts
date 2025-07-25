@@ -8,7 +8,10 @@ const requiredFields = ["title", "author", "genre", "isbn", "copies"];
 
 // Get all books
 bookRouter.get("/", async (req: Request, res: Response) => {
-  const { filter, sort, sortby, limit = 10 } = req.query;
+  const { filter, sort, sortby, page = "1", limit = "10" } = req.query;
+
+  const _page = parseInt(page as string);
+  const _limit = parseInt(limit as string);
 
   let pipeline: PipelineStage[] = [];
 
@@ -26,8 +29,9 @@ bookRouter.get("/", async (req: Request, res: Response) => {
       },
     });
   }
+
   pipeline.push({
-    $limit: parseInt(limit as string),
+    $skip: (_page >= 1 ? _page - 1 : 0) * _limit,
   });
 
   try {

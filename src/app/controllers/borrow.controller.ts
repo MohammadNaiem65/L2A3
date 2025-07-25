@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import { PipelineStage } from "mongoose";
 import Book from "../models/book.model";
 import Borrow from "../models/borrow.model";
 
@@ -11,7 +12,7 @@ borrowRouter.get("/", async (req: Request, res: Response) => {
   const _page = parseInt(page as string);
   const _limit = parseInt(limit as string);
 
-  const pipeline = [
+  const pipeline: PipelineStage[] = [
     {
       $group: {
         _id: "$book",
